@@ -152,15 +152,19 @@ const Player = (props: IVideoPlayer): JSX.Element => {
 
   const addCustomSubtitles = () => {
     if (videoRef.current) {
-      const track = videoRef.current.addTextTrack("subtitles", "English", "en");
-      track.mode = "showing"; // Set the mode to 'showing' to make the subtitles visible
+      let track = videoRef.current.textTracks[0];
+      if (!track) {
+        track = videoRef.current.addTextTrack("subtitles", "English", "en");
+        track.mode = "showing";
+      } else {
+        while (track?.cues?.length && track?.cues?.length > 0) {
+          track.removeCue(track?.cues[0]);
+        }
+      }
 
-      // Add cues from context subtitles
       subtitles.forEach((sub) => {
         const start = Utils.parseSubtitleTimeline(sub.start);
         const end = Utils.parseSubtitleTimeline(sub.end);
-        console.log("Start", start);
-        console.log("end", end);
         if (
           typeof start === "number" &&
           !Number.isNaN(start) &&
@@ -233,12 +237,11 @@ const Player = (props: IVideoPlayer): JSX.Element => {
         onTimeUpdate={handleProgress}
         className="cursor-pointer w-full h-full object-cover"
         autoPlay
-        controls
       >
         <source src={videoData.source} type="video/mp4" />
         <p>Your Browser does not support .mp4 video</p>
       </video>
-      {false && (
+      {showControls && (
         <div>
           <div className="absolute inset-0 flex items-center justify-center">
             <button

@@ -5,10 +5,6 @@ export class Utils {
     return typeof window !== "undefined";
   }
 
-  static getAssetPath(path: string) {
-    return `http://commondatastorage.googleapis.com/gtv-videos-bucket/${path}`;
-  }
-
   static parseSubtitleTimeline(time: string) {
     const splittedTime = time.split("/");
     return (

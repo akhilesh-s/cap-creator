@@ -11,7 +11,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 
 interface IProps {
   currentSubtitle: ISubtitle;
-  onDeleteSubtitle: (index: number) => void; // Function to delete a subtitle
+  onDeleteSubtitle: (index: number) => void;
 }
 
 function SubtitleCreator(props: IProps) {
@@ -75,7 +75,7 @@ function SubtitleCreator(props: IProps) {
   };
 
   const handleDeleteSubtitle = () => {
-    onDeleteSubtitle(currentSubtitle.index); // Trigger delete function with the index of the current subtitle
+    onDeleteSubtitle(currentSubtitle.index);
   };
 
   return (
@@ -105,8 +105,7 @@ function SubtitleCreator(props: IProps) {
         </div>
         <button className="mr-2" onClick={handleDeleteSubtitle}>
           <CancelIcon />
-        </button>{" "}
-        {/* Delete button */}
+        </button>
       </div>
     </div>
   );
