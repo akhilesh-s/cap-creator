@@ -1,9 +1,10 @@
+import React, { createContext, useContext, useState } from "react";
 import { ISubtitle } from "@vb/types/video";
-import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface SubtitleContextType {
   subtitles: ISubtitle[];
   addOrUpdateSubtitle: (subtitle: ISubtitle) => void;
+  deleteSubtitle: (subtitle: ISubtitle) => void;
 }
 
 interface ISubtitleProviderProps {
@@ -13,6 +14,7 @@ interface ISubtitleProviderProps {
 const SubtitleContext = createContext<SubtitleContextType>({
   subtitles: [],
   addOrUpdateSubtitle: () => {},
+  deleteSubtitle: () => {},
 });
 
 export const useSubtitle = () => {
@@ -39,8 +41,16 @@ export const SubtitleProvider: React.FC<ISubtitleProviderProps> = ({
     });
   };
 
+  const deleteSubtitle = (subtitleToDelete: ISubtitle) => {
+    setSubtitles((prevSubtitles) =>
+      prevSubtitles.filter((sub) => sub !== subtitleToDelete)
+    );
+  };
+
   return (
-    <SubtitleContext.Provider value={{ subtitles, addOrUpdateSubtitle }}>
+    <SubtitleContext.Provider
+      value={{ subtitles, addOrUpdateSubtitle, deleteSubtitle }}
+    >
       {children}
     </SubtitleContext.Provider>
   );

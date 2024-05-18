@@ -9,7 +9,7 @@ export const subtitleStyles = {
     // paddingLeft: '5px',
       height: "30px",
       fontSize: '10px',
-      maxWidth: '100px',
+      maxWidth: '120px',
     },
 
     ".MuiFormLabel-root": {

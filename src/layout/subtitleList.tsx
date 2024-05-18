@@ -7,7 +7,7 @@ import { layoutStyle } from "./subtitleList.styles";
 import SubtitlesIcon from "@mui/icons-material/Subtitles";
 
 function SubtitleList() {
-  const { subtitles, addOrUpdateSubtitle } = useSubtitle();
+  const { subtitles, addOrUpdateSubtitle, deleteSubtitle } = useSubtitle();
 
   const handleSubmit = () => {
     const totalSubtitles = subtitles.length;
@@ -37,6 +37,13 @@ function SubtitleList() {
     }
   };
 
+  const handleDeleteSubtitle = (index: number) => {
+    const deletedSubtitle = subtitles.find((sub) => sub.index === index);
+    if (deletedSubtitle) {
+      deleteSubtitle(deletedSubtitle);
+    }
+  };
+
   return (
     <div>
       <div className="flex flex-col items-center text-center justify-center">
@@ -46,7 +53,11 @@ function SubtitleList() {
       </div>
       <div className="flex flex-col">
         {subtitles.map((subtitle, index) => (
-          <SubtitleCreator currentSubtitle={subtitle} key={index} />
+          <SubtitleCreator
+            currentSubtitle={subtitle}
+            key={index}
+            onDeleteSubtitle={handleDeleteSubtitle}
+          />
         ))}
       </div>
       <Grid sx={layoutStyle.buttonContainer} onClick={handleSubmit}>

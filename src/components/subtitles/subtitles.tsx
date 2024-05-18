@@ -7,12 +7,15 @@ import { useSubtitle } from "@vb/context/subtitleProvider";
 import { ISubtitle } from "@vb/types/video";
 import { Utils } from "@vb/utils/utils";
 
+import CancelIcon from "@mui/icons-material/Cancel";
+
 interface IProps {
   currentSubtitle: ISubtitle;
+  onDeleteSubtitle: (index: number) => void; // Function to delete a subtitle
 }
 
 function SubtitleCreator(props: IProps) {
-  const { currentSubtitle } = props;
+  const { currentSubtitle, onDeleteSubtitle } = props;
   const [index, setIndex] = useState<number | undefined>(
     currentSubtitle?.index
   );
@@ -20,6 +23,8 @@ function SubtitleCreator(props: IProps) {
   const [endTime, setEndTime] = useState(currentSubtitle?.end ?? "0/0/0");
   const [subtitleText, setSubtitleText] = useState(currentSubtitle?.text ?? "");
   const { addOrUpdateSubtitle } = useSubtitle();
+
+  debugger;
 
   useEffect(() => {
     if (currentSubtitle) {
@@ -69,6 +74,10 @@ function SubtitleCreator(props: IProps) {
     });
   };
 
+  const handleDeleteSubtitle = () => {
+    onDeleteSubtitle(currentSubtitle.index); // Trigger delete function with the index of the current subtitle
+  };
+
   return (
     <div className="container">
       <div className="flex bg-gray-900">
@@ -88,13 +97,16 @@ function SubtitleCreator(props: IProps) {
         </div>
         <div className="flex flex-col p-2 w-full">
           <TextField
-            rows={4}
             onChange={handleTextChange}
             placeholder="Enter Subtitle"
             value={subtitleText}
             sx={subtitleStyles.textField}
           />
         </div>
+        <button className="mr-2" onClick={handleDeleteSubtitle}>
+          <CancelIcon />
+        </button>{" "}
+        {/* Delete button */}
       </div>
     </div>
   );
