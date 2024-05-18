@@ -9,3 +9,10 @@ export interface IVideo {
   playOnClick?: (id: number) => void;
   progress?: number;
 }
+
+export interface ISubtitle {
+  index: number;
+  start: string;
+  end: string;
+  text: string;
+}

@@ -12,6 +12,8 @@ import {
   BsFillVolumeUpFill,
   BsFillVolumeDownFill,
 } from "react-icons/bs";
+import { useSubtitle } from "@vb/context/subtitleProvider";
+import { Utils } from "@vb/utils/utils";
 
 interface IVideoPlayer {
   videoData: IVideo;
@@ -50,6 +52,7 @@ const Player = (props: IVideoPlayer): JSX.Element => {
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(isMuted ? 0 : 100);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const { subtitles } = useSubtitle();
 
   const options = [
     { value: 0.5, label: "0.5x" },
@@ -124,8 +127,6 @@ const Player = (props: IVideoPlayer): JSX.Element => {
   };
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // const newTime = (parseFloat(e.target.value) * duration) / 100;
-
     setIsPlaying(false);
     const newTime = parseFloat(e.target.value);
 
@@ -154,24 +155,28 @@ const Player = (props: IVideoPlayer): JSX.Element => {
       const track = videoRef.current.addTextTrack("subtitles", "English", "en");
       track.mode = "showing"; // Set the mode to 'showing' to make the subtitles visible
 
-      // Define your custom subtitles
-      const subtitles = [
-        { start: 0, end: 5, text: "Welcome to the videooo!" },
-        { start: 5, end: 10, text: "This is a custom subtitle example." },
-        { start: 10, end: 15, text: "Enjoy watching!" },
-      ];
-
-      // Add cues to the track
-      subtitles.forEach((subtitle) => {
-        const cue = new VTTCue(subtitle.start, subtitle.end, subtitle.text);
-        track.addCue(cue);
+      // Add cues from context subtitles
+      subtitles.forEach((sub) => {
+        const start = Utils.parseSubtitleTimeline(sub.start);
+        const end = Utils.parseSubtitleTimeline(sub.end);
+        console.log("Start", start);
+        console.log("end", end);
+        if (
+          typeof start === "number" &&
+          !Number.isNaN(start) &&
+          !Number.isNaN(end) &&
+          typeof end === "number"
+        ) {
+          const cue = new VTTCue(start, end, sub.text);
+          track.addCue(cue);
+        }
       });
     }
   };
 
   useEffect(() => {
     addCustomSubtitles();
-  }, []);
+  }, [subtitles]);
 
   useEffect(() => {
     const videoElement = videoRef?.current;
@@ -184,7 +189,6 @@ const Player = (props: IVideoPlayer): JSX.Element => {
 
       const handleDurationChange = async () => {
         setDuration(videoElement.duration);
-        // if (videoData.progress) setCurrentTime(videoData.progress);
       };
 
       videoElement.addEventListener("timeupdate", handleTimeUpdate);
@@ -229,19 +233,12 @@ const Player = (props: IVideoPlayer): JSX.Element => {
         onTimeUpdate={handleProgress}
         className="cursor-pointer w-full h-full object-cover"
         autoPlay
+        controls
       >
         <source src={videoData.source} type="video/mp4" />
-        {/* <track
-          id="subtitles"
-          kind="subtitles"
-          src="/subtits.vtt"
-          srcLang="en"
-          label="English"
-          default
-        /> */}
         <p>Your Browser does not support .mp4 video</p>
       </video>
-      {showControls && (
+      {false && (
         <div>
           <div className="absolute inset-0 flex items-center justify-center">
             <button
@@ -256,12 +253,11 @@ const Player = (props: IVideoPlayer): JSX.Element => {
               id="default-range"
               type="range"
               step={1}
-              className="w-full h-2 bg-gray-200 rounded-lg  cursor-pointer dark:bg-gray-700"
+              className="w-full h-2 bg-gray-200 rounded-lg cursor-pointer dark:bg-gray-700"
               max={duration}
               value={progress}
               onChange={handleSliderChange}
             ></input>
-
             <div className="p-1 text-white">
               <p className="flex flex-nowrap justify-center">
                 {formatTime(currentTime)}/{formatTime(duration)}
@@ -277,7 +273,7 @@ const Player = (props: IVideoPlayer): JSX.Element => {
                 type="range"
                 max={100}
                 step={1}
-                className="w-full h-2 bg-gray-200 rounded-lg  cursor-pointer dark:bg-gray-700"
+                className="w-full h-2 bg-gray-200 rounded-lg cursor-pointer dark:bg-gray-700"
                 value={volume}
                 onChange={(e) => {
                   const value = parseInt(e.target.value);
@@ -301,7 +297,7 @@ const Player = (props: IVideoPlayer): JSX.Element => {
             </div>
             <div>
               <button
-                className=" p-2 text-white transition duration-300 ease-in-out hover:text-gray-300 focus:outline-none"
+                className="p-2 text-white transition duration-300 ease-in-out hover:text-gray-300 focus:outline-none"
                 onClick={goFullscreen}
               >
                 {!isFullScreen ? (
